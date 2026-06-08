@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: insightflow-ui
+    env: python
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.address 0.0.0.0 --server.port $PORT --server.headless true --server.enableCORS false --server.enableXsrfProtection false
+    plan: starter
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.9
+      - key: STREAMLIT_SERVER_HEADLESS
+        value: "true"
+
+  - type: web
+    name: insightflow-api
+    env: python
+    rootDir: .
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    plan: starter
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.9

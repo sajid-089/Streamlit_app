@@ -1,0 +1,11 @@
+streamlit>=1.37.0
+pandas>=2.2.2
+numpy>=1.26.4
+plotly>=5.22.0
+scikit-learn>=1.5.1
+statsmodels>=0.14.2
+openpyxl>=3.1.5
+fastapi>=0.112.0
+uvicorn>=0.30.5
+python-multipart>=0.0.9
+joblib>=1.4.2
