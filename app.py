@@ -1,5 +1,3 @@
-"""InsightFlow premium sales analytics dashboard."""
-
 from datetime import datetime
 from typing import Dict, List
 import warnings
@@ -26,7 +24,7 @@ from ml_pipeline import compare_forecasting_models, prepare_daily_series
 # PAGE CONFIG
 # ============================================
 st.set_page_config(
-    page_title="InsightFlow | Sales Intelligence",
+    page_title="Auralytix | BI",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -266,6 +264,7 @@ def apply_custom_css() -> None:
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
             @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 
             html, body, [class*="css"] {{
                 font-family: 'Inter', 'IBM Plex Sans', sans-serif;
@@ -288,14 +287,31 @@ def apply_custom_css() -> None:
 
             .hero h1 {{
                 margin: 0;
-                font-size: 1.8rem;
+                font-size: 2.2rem;
                 font-weight: 800;
                 letter-spacing: -0.04em;
-                background: linear-gradient(135deg, #ffffff 0%, #c7c7ff 100%);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
             }}
 
+            .brand-name {{
+                background: linear-gradient(135deg, #ffc700 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                font-family: 'Inter', sans-serif;
+                font-weight: 800;
+            }}
+
+            .stylish-title {{
+                font-family: 'Playfair Display', serif;
+                font-size: 1.8rem;
+                font-style: italic;
+                font-weight: 700;
+                background: linear-gradient(135deg, #68fc8c 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                margin-left: 8px;
+                opacity: 0.95;
+                letter-spacing: 0.5px;
+            }}
             .hero p {{
                 color: #a0a0c0;
                 margin-top: 0.5rem;
@@ -754,7 +770,10 @@ def main() -> None:
         <div class="hero">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap;">
                 <div>
-                    <h1>InsightFlow</h1>
+                    <h1>
+                       <span class="brand-name">AURALYTIX</span>
+                        <span class="stylish-title">| Business Intelligence & Decision Maker</span>
+                    </h1>
                     <p>
                         Premium sales intelligence for executives, analysts, and growth teams.
                         Clean uploads, smart forecasting, 3D analytics, and business-ready summaries.
