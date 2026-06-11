@@ -18,6 +18,7 @@ from analytics import (
     generate_insights,
 )
 from auth import login, logout, signup
+from assistant import build_chat_context, answer_question, suggest_followups
 from ml_pipeline import compare_forecasting_models, prepare_daily_series
 
 # ============================================
@@ -57,6 +58,11 @@ DEFAULT_STATE = {
 for key, value in DEFAULT_STATE.items():
     if key not in st.session_state:
         st.session_state[key] = value
+
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+if "chat_input" not in st.session_state:
+    st.session_state.chat_input = ""
 
 # ============================================
 # THEMES
@@ -1106,8 +1112,14 @@ def main() -> None:
     # ============================================
     # TABS
     # ============================================
-    tab1, tab2, tab3, tab4 = st.tabs(
-        ["Overview", "Deep Dive", "Forecast Lab", "Data Quality"]
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
+        [
+            "Overview",
+            "Deep Dive",
+            "Forecast Lab",
+            "Data Quality",
+            "AI Copilot",
+        ]
     )
 
     # --------------------------------------------
@@ -1383,6 +1395,75 @@ def main() -> None:
                     """,
                     unsafe_allow_html=True,
                 )
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    # --------------------------------------------
+    # TAB 5: AI COPILOT
+    # --------------------------------------------
+    with tab5:
+        st.markdown('<div class="panel">', unsafe_allow_html=True)
+        st.markdown('<div class="panel-title">AI Business Copilot</div>', unsafe_allow_html=True)
+        st.caption("Ask business questions about the current dashboard data.")
+
+        if st.session_state.data is not None:
+            chat_df = st.session_state.filtered_df if st.session_state.filtered_df is not None else st.session_state.clean_df
+            raw_kpis = calculate_kpis(chat_df)
+            kpis = normalize_kpis(raw_kpis)
+            summary = generate_executive_summary(chat_df, st.session_state.forecast_result)
+            insights = generate_insights(chat_df)
+            context = build_chat_context(chat_df, kpis, summary, insights, st.session_state.forecast_result)
+
+            # Suggested questions
+            st.markdown("**Suggested questions**")
+            cols = st.columns(2)
+            for i, q in enumerate(suggest_followups()):
+                with cols[i % 2]:
+                    if st.button(q, key=f"suggest_{i}"):
+                        st.session_state.chat_input = q
+                        st.rerun()
+
+            question = st.text_input(
+                "Ask a question",
+                value=st.session_state.chat_input,
+                placeholder="e.g. Which product is performing best?",
+                key="chat_input_box",
+            )
+
+            if st.button("Send", use_container_width=True):
+                if question.strip():
+                    answer = answer_question(question, context)
+                    st.session_state.chat_history.append({"role": "user", "text": question})
+                    st.session_state.chat_history.append({"role": "assistant", "text": answer})
+                    st.session_state.chat_input = ""
+                    st.rerun()
+
+            st.markdown("---")
+            st.markdown("### Conversation")
+
+            for msg in st.session_state.chat_history[-10:]:
+                if msg["role"] == "user":
+                    st.markdown(
+                        f"""
+                        <div class="metric-card" style="margin-bottom:10px;">
+                            <div class="metric-title">You</div>
+                            <div class="metric-helper">{msg["text"]}</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.markdown(
+                        f"""
+                        <div class="metric-card" style="margin-bottom:10px; border-color: rgba(34,197,94,0.25);">
+                            <div class="metric-title">InsightFlow Copilot</div>
+                            <div class="metric-helper">{msg["text"]}</div>
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+        else:
+            st.info("Load a dataset first to use the AI copilot.")
+
         st.markdown("</div>", unsafe_allow_html=True)
 
 
